@@ -1,8 +1,8 @@
 def binomial(n, m):
-    # terminale
+    # condizione terminale
     if m == 0 or m == n:
         return 1
-    # non terminale
+    # condizione non terminale
     else:
         return (binomial(n-1, m-1) +
                 binomial(n-1, m))

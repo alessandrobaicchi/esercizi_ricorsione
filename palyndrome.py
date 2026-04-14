@@ -1,7 +1,8 @@
 def palyndrome(word):
-    #terminale
+    # condizione terminale
     if len(word) <= 1:
         return True
+    # condizione non terminale
     else:
         return (word[0] == word[-1] and
                 palyndrome(word[1:-1]))
