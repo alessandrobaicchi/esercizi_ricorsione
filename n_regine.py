@@ -1,3 +1,4 @@
+import copy
 import time
 
 
@@ -7,11 +8,17 @@ class NRegine():    # Perché ()? In Python 3 è indifferente mettere o no in un
     def __init__(self):
         self.n_soluzioni = 0
         self.n_chiamate = 0
+        # Perché ho inizializzato questi due attributi sia qui nel costruttore e poi anche in solve2()?
+        # Qui nel costruttore è una inizializzazione e il costruttore viene eseguito una sola volta quando
+        # creo l'oggetto. Invece, in solve2() è un reset per ogni nuova esecuzione dell'algoritmo.
+        # (Vedi spiegazione sugli appunti della lezione).
+        self.soluzioni = []
 
     # ====================================== APPROCCIO 2 =================================================
     def solve2(self, N):
         self.n_soluzioni = 0    # Conta quante soluzioni sono state trovate
         self.n_chiamate = 0     # Conta il numero di chiamate alla funzione ricorsiva
+        self.soluzioni = []
         # Rappresento questo parziale come una lista
         self._ricorsione2([], N)
 
@@ -26,8 +33,10 @@ class NRegine():    # Perché ()? In Python 3 è indifferente mettere o no in un
             #     print(parziale)
             # Con _step_is_valid() verifico passo passo l'ammissibilità di una nuova regina (nuova_regina),
             # e quindi è superfluo verificare di nuovo tutto alla fine con _is_soluzione().
-            self.n_soluzioni += 1
-            print(parziale)
+            if self._is_nuova_soluzione(parziale):
+                self.n_soluzioni += 1
+                self.soluzioni.append(copy.deepcopy(parziale))
+                #print(parziale)
         # Caso ricorsivo: ho messo un numero di regine < N
         else:
             for riga in range(N):       # Col doppio for sto andando a verificare tutte le possibili celle
@@ -41,6 +50,20 @@ class NRegine():    # Perché ()? In Python 3 è indifferente mettere o no in un
                         self._ricorsione2(parziale, N)
                         # Backtracking
                         parziale.pop()
+
+
+    # Confrontiamo la soluzione_potenziale con tutte quelle già trovate:
+    # se è diversa restituiamo True, altrimenti False
+    def _is_nuova_soluzione(self, soluzione_potenziale) -> bool:
+        N = len(soluzione_potenziale)
+        for soluzione in self.soluzioni:
+            counter = 0
+            for regina in soluzione_potenziale:
+                if regina in soluzione:
+                    counter += 1
+            if counter == N:
+                return False
+        return True
 
 
     # Funzione che controlla se la nuova_regina che voglio inserire sia ammissibile rispetto
@@ -107,3 +130,4 @@ if __name__ == '__main__':
     print(f"Tempo di elaborazione: {end_time - start_time}")
     print(f"Ho trovato {nreg.n_soluzioni} soluzioni possibili")
     print(f"Chiamate effettuate: {nreg.n_chiamate}")
+    print(nreg.soluzioni)
