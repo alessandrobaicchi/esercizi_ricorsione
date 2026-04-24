@@ -21,19 +21,35 @@ class NRegine():    # Perché ()? In Python 3 è indifferente mettere o no in un
         self.n_chiamate += 1
         # Caso terminale: ho messo N regine
         if len(parziale) == N:
-            if self._is_soluzione(parziale):
-                self.n_soluzioni += 1
-                print(parziale)
+            # if self._is_soluzione(parziale):
+            #     self.n_soluzioni += 1
+            #     print(parziale)
+            # Con _step_is_valid() verifico passo passo l'ammissibilità di una nuova regina (nuova_regina),
+            # e quindi è superfluo verificare di nuovo tutto alla fine con _is_soluzione().
+            self.n_soluzioni += 1
+            print(parziale)
         # Caso ricorsivo: ho messo un numero di regine < N
         else:
             for riga in range(N):       # Col doppio for sto andando a verificare tutte le possibili celle
                 for col in range(N):
-                    # Aggiungo un pezzetto di soluzione in parziale
-                    parziale.append([riga, col])    # Appendo una nuova regina
-                    # Vado avanti con la ricorsione
-                    self._ricorsione2(parziale, N)
-                    # Backtracking
-                    parziale.pop()
+                    # Verifico che la nuova_regina sia ammissibile
+                    nuova_regina = [riga, col]
+                    if self._step_is_valid(nuova_regina, parziale):
+                        # Aggiungo un pezzetto di soluzione in parziale
+                        parziale.append(nuova_regina)    # Appendo una nuova regina
+                        # Vado avanti con la ricorsione
+                        self._ricorsione2(parziale, N)
+                        # Backtracking
+                        parziale.pop()
+
+
+    # Funzione che controlla se la nuova_regina che voglio inserire sia ammissibile rispetto
+    # alla soluzione parziale costruita sinora
+    def _step_is_valid(self, nuova_regina, parziale) -> bool:
+        for regina in parziale:
+            if not self._is_pair_admissible(nuova_regina, regina):
+                return False
+        return True
 
 
     # Funzione che prende due regine alla volta e restituisce True se possono stare insieme sulla scacchiera
@@ -77,6 +93,8 @@ class NRegine():    # Perché ()? In Python 3 è indifferente mettere o no in un
                     return False
         # Se invece tutte le possibili coppie di regine sono ammissibili -> True
         return True
+    # NOTA. Il metodo _step_is_valid() verifica passo passo l'ammissibilità di una nuova regina (nuova_regina),
+    # e quindi è superfluo verificare di nuovo tutto alla fine con _is_soluzione().
 
     # ====================================================================================================
 
